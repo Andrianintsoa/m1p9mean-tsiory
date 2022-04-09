@@ -220,11 +220,11 @@ mongodb.MongoClient.connect(connectionString
           .then(users => {
             console
             var droits = Utilisateur.droitUser(users[0])
-            jsonReturn = new WsRenderer("droits utilisateurs", 200, droits)
+            var jsonReturn = new WsRenderer("droits utilisateurs", 200, droits)
             res.json(jsonReturn.jsonReturn())
           })
           .catch(error => {
-            jsonReturn = new WsRenderer(error.message, 400)
+            var jsonReturn = new WsRenderer(error.message, 400)
             res.json(jsonReturn.jsonReturn())
           })
       })
@@ -232,7 +232,7 @@ mongodb.MongoClient.connect(connectionString
         var token = req.headers.authorization.split('Bearer ')[1]
         database.collection('user_complet').find({ "auth_utilisateur.token": token }).project({ "auth_utilisateur.token": 0, "auth_utilisateur.mdp": 0 }).toArray()
           .then(quotes => {
-            jsonReturn = new WsRenderer("Liste des utilisateurs complets", 200, quotes)
+            var jsonReturn = new WsRenderer("Liste des utilisateurs complets", 200, quotes)
             res.json(jsonReturn.jsonReturn())
           })
           .catch(error => {
@@ -244,11 +244,36 @@ mongodb.MongoClient.connect(connectionString
       app.get('/utilisateurs', (req, res) => {
         database.collection('utilisateurs').find(req.query).toArray()
           .then(quotes => {
-            jsonReturn = new WsRenderer("Liste des categories de plats", 200, quotes)
+            var jsonReturn = new WsRenderer("Liste des categories de plats", 200, quotes)
             res.json(jsonReturn.jsonReturn())
           })
           .catch(error => {
-            jsonReturn = new WsRenderer(error.message, 400)
+            var jsonReturn = new WsRenderer(error.message, 400)
+            res.json(jsonReturn.jsonReturn())
+          })
+      })
+
+      //categorie plat
+      app.get('/categorie_plat', (req, res) => {
+        database.collection('cat_plat').find(req.query).toArray()
+          .then(quotes => {
+            var jsonReturn = new WsRenderer("Liste des categories de plats", 200, quotes)
+            res.json(jsonReturn.jsonReturn())
+          })
+          .catch(error => {
+            var jsonReturn = new WsRenderer(error.message, 400)
+            res.json(jsonReturn.jsonReturn())
+          })
+      })
+      app.post('/categorie_plat', (req, res) => {
+        var cat_plat = database.collection('cat_plat')
+        cat_plat.insertOne(req.body)
+          .then(result => {
+            var jsonReturn = new WsRenderer("Nouveau categorie plat", 200, { insertedId: result.insertedId })
+            res.json(jsonReturn.jsonReturn())
+          })
+          .catch(error => {
+            var jsonReturn = new WsRenderer("Nouveau plat echoue", 400)
             res.json(jsonReturn.jsonReturn())
           })
       })

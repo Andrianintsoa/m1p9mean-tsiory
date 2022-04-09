@@ -47,8 +47,8 @@
               >
                 Type utilisateur
               </label>
-              <select name="id_type_u" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                <option *ngFor="let type_user of type_utilisateur" [value]="type_user._id" selected>{{type_user.nom}}</option>
+              <select name="id_type_u" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon" ngModel>
+                <option *ngFor="let type_user of type_utilisateur" [value]="type_user._id">{{type_user.nom}}</option>
               </select>
             </div>
 

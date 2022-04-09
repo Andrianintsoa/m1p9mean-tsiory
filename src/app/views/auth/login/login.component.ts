@@ -16,6 +16,9 @@ export class LoginComponent implements OnInit {
     this.loadUtilisateur();
     this.loginPostUrl = ws_url + "login"
   }
+  ngOnInit(): void {
+
+  }
   //
   urlLogin(type_utilisateur: string) {
     var lien: string = '';
@@ -67,6 +70,5 @@ export class LoginComponent implements OnInit {
     this.type_utilisateur = this.typeUtilisateurService.findAll()
       .subscribe((data: any) => this.type_utilisateur = data);
   }
-  ngOnInit(): void {
-  }
+  
 }
