@@ -159,6 +159,66 @@ app.post('/login', (req, res) => {
     res.json(wsRenderer.jsonReturn())
   })
 })
+//clients
+app.get('/clients', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  resultat = utilisateur.findUser(db, req.body, "client").then(function (users) {
+    var jsonReturn = new WsRenderer("Liste des clients ekaly", 200, users)
+    res.json(jsonReturn.jsonReturn())
+  })
+    .catch(function (error) {
+      var jsonReturn = new WsRenderer("Erreur requete liste des clients ekaly", 500)
+      res.json(jsonReturn.jsonReturn())
+    })
+})
+app.post('/clients', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  utilisateur.insertUser(req, res, db, "client");
+})
+//livreurs
+app.get('/livreurs', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  resultat = utilisateur.findUser(db, req.body, "livreur").then(function (users) {
+    var jsonReturn = new WsRenderer("Liste des livreurs ekaly", 200, users)
+    res.json(jsonReturn.jsonReturn())
+  })
+    .catch(function (error) {
+      var jsonReturn = new WsRenderer("Erreur requete liste des livreurs ekaly", 500)
+      res.json(jsonReturn.jsonReturn())
+    })
+})
+app.post('/livreurs', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  utilisateur.insertUser(req, res, db, "livreur")
+})
+//restos
+app.get('/restos', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  resultat = utilisateur.findUser(db, req.body, "resto").then(function (users) {
+    var jsonReturn = new WsRenderer("Liste des livreurs ekaly", 200, users)
+    res.json(jsonReturn.jsonReturn())
+  })
+    .catch(function (error) {
+      var jsonReturn = new WsRenderer("Erreur requete liste des restaurants ekaly", 500)
+      res.json(jsonReturn.jsonReturn())
+    })
+})
+app.post('/restos', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  utilisateur.insertUser(req, res, db, "resto");
+})
+//admin
+app.post('/admin', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  utilisateur.insertUser(req, res, db, "admin");
+})
 // Errors handler.
 function manageError(res, reason, message, code) {
     console.log("Error: " + reason);
