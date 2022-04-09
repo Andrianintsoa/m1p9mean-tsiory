@@ -5,7 +5,14 @@
 export const environment = {
   production: false,
 };
-
+export const ws_url = 'http://localhost:8080/'
+export const type_user =
+{
+  user_client: '625139ddad79350000624d4d',
+  user_resto: '62513a27ad79350000624d51',
+  user_ekaly: '62513a1fad79350000624d50',
+  user_livreur: '62513a2dad79350000624d52'
+}
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
