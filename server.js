@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 // Create link to Angular build directory
 // The `ng build` command will save the result
 // under the `dist` folder.
-var distDir = __dirname + "/dist/";
+var distDir = __dirname + "/dist/node-express-angular";
 app.use(express.static(distDir));
 
 // Local port.
