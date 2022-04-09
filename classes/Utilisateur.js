@@ -1,11 +1,14 @@
 var md5 = require('md5');
 const Constantes = require('./Constantes');
 const { ObjectId } = require('mongodb');
+const DroitUser = require('./DroitUser')
 let Utilisateur = class {
   constructor(_id, nom, adresse, supprime, id_type_u, email, mdp, image) {
   //constructor() {
   }
-
+  static droitUser(user) {
+    return DroitUser.getDroitUser(user)
+  }
   construct_data(data) {
     this.nom = data.nom;
     this.adresse = data.adresse;
