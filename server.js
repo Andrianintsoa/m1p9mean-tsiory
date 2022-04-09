@@ -219,6 +219,45 @@ app.post('/admin', (req, res) => {
   utilisateur.construct_data(req.body)
   utilisateur.insertUser(req, res, db, "admin");
 })
+//utilisateurs
+app.get('/droit-utilisateur', (req, res) => {
+  var token = Utilisateur.getRequestToken(req)
+  db.collection('user_complet').find({ "auth_utilisateur.token": token }).project({ "auth_utilisateur.token": 0, "auth_utilisateur.mdp": 0 }).toArray()
+    .then(users => {
+      console
+      var droits = Utilisateur.droitUser(users[0])
+      jsonReturn = new WsRenderer("droits utilisateurs", 200, droits)
+      res.json(jsonReturn.jsonReturn())
+    })
+    .catch(error => {
+      jsonReturn = new WsRenderer(error.message, 400)
+      res.json(jsonReturn.jsonReturn())
+    })
+})
+app.get('/utilisateurs-complet', (req, res) => {
+  var token = req.headers.authorization.split('Bearer ')[1]
+  db.collection('user_complet').find({ "auth_utilisateur.token": token }).project({ "auth_utilisateur.token": 0, "auth_utilisateur.mdp": 0 }).toArray()
+    .then(quotes => {
+      jsonReturn = new WsRenderer("Liste des utilisateurs complets", 200, quotes)
+      res.json(jsonReturn.jsonReturn())
+    })
+    .catch(error => {
+      jsonReturn = new WsRenderer(error.message, 400)
+      res.json(jsonReturn.jsonReturn())
+    })
+})
+
+app.get('/utilisateurs', (req, res) => {
+  db.collection('utilisateurs').find(req.query).toArray()
+    .then(quotes => {
+      jsonReturn = new WsRenderer("Liste des categories de plats", 200, quotes)
+      res.json(jsonReturn.jsonReturn())
+    })
+    .catch(error => {
+      jsonReturn = new WsRenderer(error.message, 400)
+      res.json(jsonReturn.jsonReturn())
+    })
+})
 // Errors handler.
 function manageError(res, reason, message, code) {
     console.log("Error: " + reason);
