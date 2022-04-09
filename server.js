@@ -139,6 +139,26 @@ app.get('/utilisateurs', (req, res) => {
     })
     .catch(/* ... */)
 })
+//login
+app.post('/login', (req, res) => {
+  var utilisateur = new Utilisateur()
+  utilisateur.construct_data(req.body)
+  var testLogin = utilisateur.testLogin(db)
+  testLogin.then(function (auth) {
+    var wsRenderer
+    if (auth != null) {
+      wsRenderer = new WsRenderer("Login success", 200, {
+        token: auth.auth_utilisateur[0].token,
+        id_type_u: auth.id_type_u,
+        _id: auth._id
+      })
+    }
+    else {
+      wsRenderer = new WsRenderer("Login failed", 400)
+    }
+    res.json(wsRenderer.jsonReturn())
+  })
+})
 // Errors handler.
 function manageError(res, reason, message, code) {
     console.log("Error: " + reason);
