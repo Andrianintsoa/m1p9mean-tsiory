@@ -14,10 +14,19 @@ var PRODUCTS_COLLECTION = "products";
 // Create new instance of the express server
 var app = express();
 
+//CORS options
+const cors = require('cors')
+var corsOptions = {
+  origin: "http://localhost:8080"
+  //origin : "https://m1p9mean-tsiory.herokuapp.com:8080"
+}
+app.use(cors(corsOptions))
+
 // Define the JSON parser as a default way 
 // to consume and produce data through the 
 // exposed APIs
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
 // Create link to Angular build directory
 // The `ng build` command will save the result
@@ -25,14 +34,14 @@ app.use(bodyParser.json());
 var distDir = __dirname + "/dist/";
 app.use(express.static(distDir));
 
-// Local database URI.
-const LOCAL_DATABASE = "mongodb://localhost:27017/app";
 // Local port.
 const LOCAL_PORT = 8080;
 
 // Init the server
 //mongodb.MongoClient.connect(process.env.MONGODB_URL || LOCAL_DATABASE,
-mongodb.MongoClient.connect("mongodb+srv://rakotosonfabien:motdepasse123456@ekalymaster.mxrkl.mongodb.net/test?authSource=admin&replicaSet=atlas-lihhff-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true",
+const connectionString = process.env.DB_URL
+mongodb.MongoClient.connect(connectionString
+  ,
     {
         useUnifiedTopology: true,
         useNewUrlParser: true,
@@ -114,6 +123,22 @@ app.delete("/api/products/:id", function (req, res) {
     }
 });
 
+//type_utilisateurs
+app.get('/type_utilisateur', (req, res) => {
+  database.collection('type_utilisateur').find().toArray()
+    .then(utilisateurs => {
+      res.json(utilisateurs)
+    })
+    .catch(/* ... */)
+})
+//users
+app.get('/utilisateurs', (req, res) => {
+  database.collection('utilisateurs').find().toArray()
+    .then(utilisateurs => {
+      res.json(utilisateurs)
+    })
+    .catch(/* ... */)
+})
 // Errors handler.
 function manageError(res, reason, message, code) {
     console.log("Error: " + reason);
