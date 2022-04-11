@@ -154,7 +154,6 @@ const Utilisateur = class {
     });
   }
 }
-const WsRenderer = require('./classes/WsRenderer')
 //CORS options
 const cors = require('cors')
 var corsOptions = {
