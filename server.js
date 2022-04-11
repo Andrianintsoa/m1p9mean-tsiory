@@ -1,3 +1,4 @@
+var md5 = require('md5');
 // Use Express
 var express = require("express");
 require('./dotenv')
@@ -15,10 +16,145 @@ var PRODUCTS_COLLECTION = "products";
 // Create new instance of the express server
 var app = express();
 //myClasses
-const Utilisateur = require('./classes/Utilisateur')
+const Constantes = class {
+  static typeClient() { return "624605e5302389a762d5fcff" }
+  static typeAdmin() { return "62460574302389a762d5fcfb" }
+  static typeResto() { return "624605bd302389a762d5fcfd" }
+  static typeLivreur() { return "624605d4302389a762d5fcfe" }
+}
+const WsRenderer = class {
+  constructor(message, status, data) {
+    this.message = message
+    this.status = status
+    this.data = data
+  }
+  jsonReturn() {
+    var jsonReturn = {
+      meta: {
+        message: this.message,
+        status: this.status
+      }
+    }
+    if (this.data != null) {
+      jsonReturn.data =
+        this.data
+    }
+    return jsonReturn
+  }
+}
+const Utilisateur = class {
+  constructor(_id, nom, adresse, supprime, id_type_u, email, mdp, image) {
+    //constructor() {
+  }
+  static droitUser(user) {
+    return DroitUser.getDroitUser(user)
+  }
+  construct_data(data) {
+    this.nom = data.nom;
+    this.adresse = data.adresse;
+    this.mdp = data.mdp;
+    this.email = data.email;
+    this.id_type_u = data.id_type_u;
+    this.image = data.image
+  }
+  //get token from requeest
+  static getRequestToken(req) {
+    var tokenUser = req.headers.authorization.split('Bearer ')[1]
+    return tokenUser
+  }
+  //login test
+  testLogin(db) {
+    var authCollection = db.collection('user_complet')
+    const auth = authCollection.findOne({
+      id_type_u: ObjectId(this.id_type_u),
+      "auth_utilisateur.email": this.email,
+      "auth_utilisateur.mdp": this.cryptMdp(this.mdp)
+    })
+
+    if (auth != null) {
+      return auth
+    }
+    else {
+      return null
+    }
+  }
+
+  saltedMdp(mdp) {
+    return "MyPassword" + mdp + "RussiaMadagascar"
+  }
+  cryptMdp(mdp) {
+    return md5(this.saltedMdp(mdp))
+  }
+
+  saltedToken() {
+    return "MyPasswordMyEmail" + this.email + this.mdp + Date.now() + "salted"
+  }
+  createToken() {
+    var defaultPassword = this.saltedToken()
+    return md5(defaultPassword)
+  }
+  typeUser(type_user) {
+    switch (type_user) {
+      case "ekaly":
+        return Constantes.typeEkaly()
+        break
+      case "resto":
+        return Constantes.typeResto()
+        break
+      case "client":
+        return Constantes.typeClient()
+        break
+      case "livreur":
+        return Constantes.typeLivreur()
+        break
+      default:
+        return Constantes.typeClient()
+        break
+    }
+  }
+  findUser(db, data, typeUser) {
+    typeUser = this.typeUser(typeUser)
+    data.id_type_u = ObjectId(typeUser)
+    console.log(data)
+    var resultats = db.collection('utilisateurs').find(data).toArray()
+    return resultats
+  }
+  //inserer user
+  insertUser(req, res, db, type_user) {
+    var typeUser = this.typeUser(type_user)
+    var userCollection = db.collection('utilisateurs');
+    var authCollection = db.collection('auth_utilisateur');
+    var userBody = {
+      nom: this.nom,
+      adresse: this.adresse,
+      supprime: false,
+      id_type_u: ObjectId(typeUser),
+      image: this.image
+    }
+    var token = this.createToken()
+    userCollection.insertOne(userBody).then(result => {
+      this._id = result.insertedId
+      var cryptedMdp = this.cryptMdp(this.mdp)
+      var authBody = {
+        mdp: cryptedMdp,
+        email: this.email,
+        token: token,
+        date_token: Date.now(),
+        id_user: ObjectId(this._id)
+      }
+      authCollection.insertOne(authBody).then(result => {
+        console.log("Auth inserted");
+      }).catch(error => console.error(error))
+    }).catch(error => console.error(error))
+    res.json({
+      meta: {
+        msg: 'User created',
+        status: 200
+      }
+    });
+  }
+}
 const WsRenderer = require('./classes/WsRenderer')
-const Plat = require('./classes/Plat')
-const CommandePlat = require('./classes/CommandePlat')
 //CORS options
 const cors = require('cors')
 var corsOptions = {
