@@ -174,7 +174,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 // under the `dist` folder.
 var distDir = __dirname + "/dist/node-express-angular";
 app.use(express.static(distDir));
-
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '/dist/node-express-angular/index.html')));
 // Local port.
 const LOCAL_PORT = 8080;
 
