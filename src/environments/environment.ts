@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
 };
-export const ws_url = 'http://localhost:8080/'
+export const ws_url = 'api/'
 export const type_user =
 {
   user_client: '625139ddad79350000624d4d',

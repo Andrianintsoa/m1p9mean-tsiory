@@ -8,6 +8,7 @@ var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
 // The database variable
 var database;
+const path = require('path')
 // The products collection
 var PRODUCTS_COLLECTION = "products";
 
@@ -117,7 +118,7 @@ mongodb.MongoClient.connect(connectionString
       });
 
       //type_utilisateurs
-      app.get('/type_utilisateur', (req, res) => {
+      app.get('/api/type_utilisateur', (req, res) => {
         database.collection('type_utilisateur').find().toArray()
           .then(utilisateurs => {
             console.log(database)
@@ -126,7 +127,7 @@ mongodb.MongoClient.connect(connectionString
           .catch(/* ... */)
       })
       //users
-      app.get('/utilisateurs', (req, res) => {
+      app.get('/api/utilisateurs', (req, res) => {
         database.collection('utilisateurs').find().toArray()
           .then(utilisateurs => {
             res.json(utilisateurs)
@@ -134,7 +135,7 @@ mongodb.MongoClient.connect(connectionString
           .catch(/* ... */)
       })
       //login
-      app.post('/login', (req, res) => {
+      app.post('/api/login', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         var testLogin = utilisateur.testLogin(database)
@@ -154,7 +155,7 @@ mongodb.MongoClient.connect(connectionString
         })
       })
       //clients
-      app.get('/clients', (req, res) => {
+      app.get('/api/clients', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         resultat = utilisateur.findUser(database, req.body, "client").then(function (users) {
@@ -166,13 +167,13 @@ mongodb.MongoClient.connect(connectionString
             res.json(jsonReturn.jsonReturn())
           })
       })
-      app.post('/clients', (req, res) => {
+      app.post('/api/clients', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         utilisateur.insertUser(req, res, database, "client");
       })
       //livreurs
-      app.get('/livreurs', (req, res) => {
+      app.get('/api/livreurs', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         resultat = utilisateur.findUser(database, req.body, "livreur").then(function (users) {
@@ -184,13 +185,13 @@ mongodb.MongoClient.connect(connectionString
             res.json(jsonReturn.jsonReturn())
           })
       })
-      app.post('/livreurs', (req, res) => {
+      app.post('/api/livreurs', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         utilisateur.insertUser(req, res, database, "livreur")
       })
       //restos
-      app.get('/restos', (req, res) => {
+      app.get('/api/restos', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         resultat = utilisateur.findUser(database, req.body, "resto").then(function (users) {
@@ -202,19 +203,19 @@ mongodb.MongoClient.connect(connectionString
             res.json(jsonReturn.jsonReturn())
           })
       })
-      app.post('/restos', (req, res) => {
+      app.post('/api/restos', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         utilisateur.insertUser(req, res, database, "resto");
       })
       //admin
-      app.post('/admin', (req, res) => {
+      app.post('/api/admin', (req, res) => {
         var utilisateur = new Utilisateur()
         utilisateur.construct_data(req.body)
         utilisateur.insertUser(req, res, database, "admin");
       })
       //utilisateurs
-      app.get('/droit-utilisateur', (req, res) => {
+      app.get('/api/droit-utilisateur', (req, res) => {
         var token = Utilisateur.getRequestToken(req)
         database.collection('user_complet').find({ "auth_utilisateur.token": token }).project({ "auth_utilisateur.token": 0, "auth_utilisateur.mdp": 0 }).toArray()
           .then(users => {
@@ -228,7 +229,7 @@ mongodb.MongoClient.connect(connectionString
             res.json(jsonReturn.jsonReturn())
           })
       })
-      app.get('/utilisateurs-complet', (req, res) => {
+      app.get('/api/utilisateurs-complet', (req, res) => {
         var token = req.headers.authorization.split('Bearer ')[1]
         database.collection('user_complet').find({ "auth_utilisateur.token": token }).project({ "auth_utilisateur.token": 0, "auth_utilisateur.mdp": 0 }).toArray()
           .then(quotes => {
@@ -241,7 +242,7 @@ mongodb.MongoClient.connect(connectionString
           })
       })
 
-      app.get('/utilisateurs', (req, res) => {
+      app.get('/api/utilisateurs', (req, res) => {
         database.collection('utilisateurs').find(req.query).toArray()
           .then(quotes => {
             var jsonReturn = new WsRenderer("Liste des categories de plats", 200, quotes)
@@ -254,7 +255,7 @@ mongodb.MongoClient.connect(connectionString
       })
 
       //categorie plat
-      app.get('/categorie_plat', (req, res) => {
+      app.get('/api/categorie_plat', (req, res) => {
         database.collection('cat_plat').find(req.query).toArray()
           .then(quotes => {
             var jsonReturn = new WsRenderer("Liste des categories de plats", 200, quotes)
@@ -265,7 +266,7 @@ mongodb.MongoClient.connect(connectionString
             res.json(jsonReturn.jsonReturn())
           })
       })
-      app.post('/categorie_plat', (req, res) => {
+      app.post('/api/categorie_plat', (req, res) => {
         var cat_plat = database.collection('cat_plat')
         cat_plat.insertOne(req.body)
           .then(result => {
